@@ -2,15 +2,18 @@
 
 namespace SIS\App\Controller;
 
+use SIS\App\Response;
+
 class Home
 {
 
-    public function index($number, $id)
+    public function index($body, $params): Response
     {
-        echo $number . PHP_EOL;
-        echo $id . PHP_EOL;
-        echo "sa";
-
+        return Response::status(301)->json([
+            "username" => "Atakan",
+            "age" => 22,
+            "studentNumber" => 2018556069
+        ]);
     }
 
     public function users()

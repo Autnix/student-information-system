@@ -92,16 +92,17 @@ class Router
     private static function runCallback($callback, array $params = []): void
     {
         if (is_callable($callback)) {
-            call_user_func_array($callback, $params);
+            $result = call_user_func_array($callback, $params);
         } else {
 
             [$controllerName, $controllerMethod] = explode('@', $callback);
 
             $controllerName = "SIS\\App\\Controller\\" . $controllerName;
             $controller = new $controllerName();
-            call_user_func_array([$controller, $controllerMethod], $params);
-
+            $result = call_user_func_array([$controller, $controllerMethod], $params);
         }
+
+        Response::end($result);
     }
 
     /**

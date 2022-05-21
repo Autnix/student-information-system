@@ -5,10 +5,13 @@ namespace SIS\App;
 class Input
 {
 
-    public static function getJson()
+    /**
+     * @return array
+     */
+    public static function getJson(): array
     {
         $data = json_decode(file_get_contents('php://input'), true);
-        return $data;
+        return $data ?? [];
     }
 
 }
