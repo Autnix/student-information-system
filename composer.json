@@ -15,6 +15,6 @@
   "require": {
     "vlucas/phpdotenv": "^5.4",
     "ext-pdo": "*",
-    "respect/validation": "^2.2"
+    "vlucas/valitron": "^1.4"
   }
 }
