@@ -11,6 +11,7 @@ class Router
         ":([a-zA-Z0-9]+)" => "([0-9a-zA-Z-_]+)"
     ];
     public static string $prefix = "";
+    public static array $middlewares = [];
 
     /**
      * @param string $path
@@ -18,13 +19,14 @@ class Router
      */
     public static function route(string $path): Router
     {
+        $path = (self::$prefix !== "" && $path === "/") ? "" : $path;
         self::$path = self::$prefix . $path;
         return new self();
     }
 
-    public static function dispatch()
+    public static function dispatch(): void
     {
-        //print_r(self::$routes);
+//        print_r(self::$routes);
 
         $url = self::getUrl();
         $method = self::getMethod();
@@ -44,44 +46,52 @@ class Router
                     'params' => $params
                 ];
 
-                self::runCallback($route['callback'], $request);
+                $mdcheck = self::runMiddlewares($route['middlewares'], $request);
+
+                if ($mdcheck)
+                    self::runCallback($route['callback'], $request);
 
             }
 
         }
     }
 
-    /**
-     * @param \Closure $closure
-     * @return void
-     */
-    public function group(\Closure $closure): void
+    public function middleware($callback): Router
     {
-        $closure();
-        self::$prefix = "";
-    }
-
-    /**
-     * @param string $pre
-     * @return Router
-     */
-    public static function prefix(string $pre): Router
-    {
-        self::$prefix = $pre;
+        self::$middlewares[] = $callback;
         return new self();
     }
 
-    /**
-     * @param string $path
-     * @return string
-     */
-    public static function getRealPath(string $path): string
+    /* Dispatch Running Method */
+
+    private static function runMiddlewares($middlewares, array $params = []): bool
     {
-        foreach (self::$patterns as $key => $pattern) {
-            $path = preg_replace('#' . $key . '#', $pattern, $path);
+
+        $continue = true;
+
+        foreach ($middlewares as $callback) {
+            if (is_callable($callback)) {
+                $result = call_user_func_array($callback, $params);
+            } else {
+                [$middlewareName, $middlewareMethod] = explode('@', $callback);
+
+                $middlewareName = "SIS\\App\\Middleware\\" . $middlewareName;
+                $middleware = new $middlewareName();
+                $result = call_user_func_array([$middleware, $middlewareMethod], $params);
+            }
+
+            if (!Response::hasNext($result)) {
+                Response::end($result);
+                $continue = false;
+                break;
+            } else {
+                Response::$next = false;
+            }
+
         }
 
-        return $path;
+        return $continue;
+
     }
 
     /**
@@ -105,6 +115,30 @@ class Router
         Response::end($result);
     }
 
+    /* Prefix Group Methods */
+
+    /**
+     * @param \Closure $closure
+     * @return void
+     */
+    public function group(\Closure $closure): void
+    {
+        $closure();
+        self::$prefix = "";
+    }
+
+    /**
+     * @param string $pre
+     * @return Router
+     */
+    public static function prefix(string $pre): Router
+    {
+        self::$prefix = $pre;
+        return new self();
+    }
+
+    /* Getter Methods */
+
     /**
      * @return string
      */
@@ -126,14 +160,36 @@ class Router
     }
 
     /**
+     * @param string $path
+     * @return string
+     */
+    public static function getRealPath(string $path): string
+    {
+        foreach (self::$patterns as $key => $pattern) {
+            $path = preg_replace('#' . $key . '#', $pattern, $path);
+        }
+
+        return $path;
+    }
+
+    public static function clearMiddlewares()
+    {
+        self::$middlewares = [];
+    }
+
+    /* HTTP Methods */
+
+    /**
      * @param $callback
      * @return void
      */
     public function get($callback): void
     {
         self::$routes['get'][self::$path] = [
-            "callback" => $callback
+            "callback" => $callback,
+            "middlewares" => self::$middlewares
         ];
+        self::clearMiddlewares();
     }
 
     /**
@@ -143,8 +199,36 @@ class Router
     public function post($callback): void
     {
         self::$routes['post'][self::$path] = [
-            "callback" => $callback
+            "callback" => $callback,
+            "middlewares" => self::$middlewares
         ];
+        self::clearMiddlewares();
+    }
+
+    /**
+     * @param $callback
+     * @return void
+     */
+    public function put($callback): void
+    {
+        self::$routes['put'][self::$path] = [
+            "callback" => $callback,
+            "middlewares" => self::$middlewares
+        ];
+        self::clearMiddlewares();
+    }
+
+    /**
+     * @param $callback
+     * @return void
+     */
+    public function delete($callback): void
+    {
+        self::$routes['delete'][self::$path] = [
+            "callback" => $callback,
+            "middlewares" => self::$middlewares
+        ];
+        self::clearMiddlewares();
     }
 
 

@@ -2,16 +2,22 @@
 
 require "vendor/autoload.php";
 
-use SIS\App\{Router};
+use SIS\App\{Response, Router, Config};
 
-$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+ob_start();
+Config::load();
 
-Router::route("/")->get("Home@index");
+Router::route("/home")->get("Home@index");
 
 Router::route('/users')->get(function () {
-    return \SIS\App\Response::status(200)->send("Users Page");
+    return Response::status(200)->send("Users Page");
 });
+
+Router::route('/system')
+    ->middleware('Control@login')
+    ->middleware('Control@register')
+    ->middleware('Control@logout')
+    ->get('Home@mdtest');
 
 //Router::route("/users")->get("Home@users");
 //Router::route("/users/:number/:id")->get("Home@index");
@@ -22,15 +28,16 @@ Router::route('/users')->get(function () {
 //
 //Router::route("/users/:id")->post("Home@user");
 //
-//Router::prefix("/admin")->group(function () {
-//
-//    Router::route("/?")->get(function () {
-//        echo "Admin Index";
-//    });
-//    Router::route("/run")->get(function () {
-//        echo "Admin Run";
-//    });
-//
-//});
+Router::prefix("/admin")->group(function () {
+
+    Router::route("/")->get(function () {
+        return Response::send("Admin Index");
+    });
+    Router::route("/run")->get(function () {
+        return Response::send("Admin Run");
+    });
+
+});
 
 Router::dispatch();
+ob_end_flush();

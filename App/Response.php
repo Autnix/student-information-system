@@ -7,15 +7,18 @@ class Response
 
     public static int $statusCode = 301;
     public static string $body = "";
+    public static bool $next = false;
 
-    public function json(array $res): Response
+    public static function json(array $res): Response
     {
+        header('Content-Type: application/json');
         self::$body = json_encode($res);
         return new self();
     }
 
-    public function send(string $res): Response
+    public static function send(string $res): Response
     {
+        header('Content-Type: text/html; charset=UTF-8');
         self::$body = $res;
         return new self();
     }
@@ -45,6 +48,17 @@ class Response
         }
         http_response_code($res::$statusCode);
         echo $res::$body;
+    }
+
+    public static function next()
+    {
+        self::$next = true;
+        return new self();
+    }
+
+    public static function hasNext(Response $res)
+    {
+        return $res::$next;
     }
 
 }

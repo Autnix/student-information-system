@@ -1,18 +1,19 @@
 {
-    "name": "autnix/sis",
-    "type": "project",
-    "autoload": {
-        "psr-4": {
-            "SIS\\": "./"
-        }
-    },
-    "authors": [
-        {
-            "name": "Atakan Unal",
-            "email": "atakanunal25@gmail.com"
-        }
-    ],
-    "require": {
-        "vlucas/phpdotenv": "^5.4"
+  "name": "autnix/sis",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "SIS\\": "./"
     }
+  },
+  "authors": [
+    {
+      "name": "Atakan Unal",
+      "email": "atakanunal25@gmail.com"
+    }
+  ],
+  "require": {
+    "vlucas/phpdotenv": "^5.4",
+    "ext-pdo": "*"
+  }
 }

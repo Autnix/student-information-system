@@ -2,28 +2,26 @@
 
 namespace SIS\App\Controller;
 
+use SIS\App\Controller;
+use SIS\App\Database;
 use SIS\App\Response;
+use SIS\App\Service;
+use SIS\App\Utils\Redirect;
 
-class Home
+class Home extends Controller
 {
 
     public function index($body, $params): Response
     {
-        return Response::status(301)->json([
-            "username" => "Atakan",
-            "age" => 22,
-            "studentNumber" => 2018556069
-        ]);
+
+        $LogService = $this->service('Logs');
+
+        return Response::status(301)->json($LogService->getAll());
     }
 
-    public function users()
+    public function mdtest($body, $params)
     {
-        echo "users";
-    }
-
-    public function user($body, $params)
-    {
-        print_r($body);
+        return Response::send("Testing middlewares");
     }
 
 }
