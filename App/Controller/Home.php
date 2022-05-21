@@ -17,6 +17,8 @@ class Home extends Controller
         $LogService = $this->service('Logs');
 
         return Response::status(301)->json($LogService->getAll());
+
+        
     }
 
     public function mdtest($body, $params)

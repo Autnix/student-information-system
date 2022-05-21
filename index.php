@@ -2,7 +2,7 @@
 
 require "vendor/autoload.php";
 
-use SIS\App\{Response, Router, Config};
+use SIS\App\{Response, Router, Config, Validator};
 
 ob_start();
 Config::load();
@@ -18,6 +18,12 @@ Router::route('/system')
     ->middleware('Control@register')
     ->middleware('Control@logout')
     ->get('Home@mdtest');
+
+Router::route('/login')
+    ->middleware(Validator::validate('Account@Login'))
+    ->post(function () {
+        return Response::send("OK BITTI");
+    });
 
 //Router::route("/users")->get("Home@users");
 //Router::route("/users/:number/:id")->get("Home@index");
