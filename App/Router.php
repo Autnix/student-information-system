@@ -8,10 +8,12 @@ class Router
     public static array $routes = [];
     public static string $path;
     public static array $patterns = [
-        ":([a-zA-Z0-9]+)" => "([0-9a-zA-Z-_]+)"
+        ":([a-zA-Z0-9]+)" => "([0-9a-zA-Z-_]+)",
+        "{any}" => "([0-9a-zA-Z-_/]+)"
     ];
     public static string $prefix = "";
     public static array $middlewares = [];
+    public static bool $isRoute = false;
 
     /**
      * @param string $path
@@ -24,10 +26,11 @@ class Router
         return new self();
     }
 
+    /**
+     * @return void
+     */
     public static function dispatch(): void
     {
-//        print_r(self::$routes);
-
         $url = self::getUrl();
         $method = self::getMethod();
         foreach (self::$routes[$method] ?? [] as $path => $route) {
@@ -40,6 +43,7 @@ class Router
             if (preg_match($pattern, $url, $params)) {
 
                 array_shift($params);
+                self::$isRoute = true;
 
                 $request = [
                     'body' => $requestBody,
@@ -48,8 +52,10 @@ class Router
 
                 $mdcheck = self::runMiddlewares($route['middlewares'], $request);
 
-                if ($mdcheck)
+                if ($mdcheck[0]) {
+                    $request = $mdcheck[1];
                     self::runCallback($route['callback'], $request);
+                }
 
             }
 
@@ -64,10 +70,15 @@ class Router
 
     /* Dispatch Running Method */
 
-    private static function runMiddlewares($middlewares, array $params = []): bool
+    /**
+     * @param $middlewares
+     * @param array $params
+     * @return bool
+     */
+    private static function runMiddlewares($middlewares, array $params = []): array
     {
 
-        $continue = true;
+        [$continue, $mdData] = [true, []];
 
         foreach ($middlewares as $callback) {
             if (is_callable($callback)) {
@@ -85,12 +96,15 @@ class Router
                 $continue = false;
                 break;
             } else {
+                $mdData = Response::$mdData;
                 Response::$next = false;
+                $params['mdData'] = [...$params['mdData'] ?? [], $mdData];
+                Response::$mdData = [];
             }
 
         }
 
-        return $continue;
+        return [$continue, $params];
 
     }
 
@@ -172,9 +186,20 @@ class Router
         return $path;
     }
 
-    public static function clearMiddlewares()
+    /**
+     * @return void
+     */
+    public static function clearMiddlewares(): void
     {
         self::$middlewares = [];
+    }
+
+    /**
+     * @return bool
+     */
+    public static function hasRoute(): bool
+    {
+        return self::$isRoute;
     }
 
     /* HTTP Methods */

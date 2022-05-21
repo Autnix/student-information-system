@@ -7,7 +7,7 @@ use SIS\App\{Response, Router, Config, Validator};
 ob_start();
 Config::load();
 
-Router::route("/home")->get("Home@index");
+Router::route("/")->get("Home@index");
 
 Router::route('/users')->get(function () {
     return Response::status(200)->send("Users Page");
@@ -20,9 +20,12 @@ Router::route('/system')
     ->get('Home@mdtest');
 
 Router::route('/login')
-    ->middleware(Validator::validate('Account@Login'))
-    ->post(function () {
-        return Response::send("OK BITTI");
+    ->middleware('Authentication@authenticate')
+//    ->middleware(Validator::validate('Account@Login'))
+//    ->middleware("Control@check")
+    ->post(function ($body, $params, $mdData) {
+
+        return Response::send("Username: " . $mdData[0]['user']['name']);
     });
 
 //Router::route("/users")->get("Home@users");
@@ -39,11 +42,13 @@ Router::prefix("/admin")->group(function () {
     Router::route("/")->get(function () {
         return Response::send("Admin Index");
     });
-    Router::route("/run")->get(function () {
+    Router::route("/run/:id")->get(function () {
         return Response::send("Admin Run");
     });
 
 });
 
+
 Router::dispatch();
+
 ob_end_flush();

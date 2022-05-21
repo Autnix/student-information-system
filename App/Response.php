@@ -8,6 +8,7 @@ class Response
     public static int $statusCode = 301;
     public static string $body = "";
     public static bool $next = false;
+    public static array $mdData = [];
 
     public static function json(array $res): Response
     {
@@ -50,9 +51,10 @@ class Response
         echo $res::$body;
     }
 
-    public static function next()
+    public static function next($data = [])
     {
         self::$next = true;
+        self::$mdData = $data;
         return new self();
     }
 

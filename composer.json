@@ -15,6 +15,7 @@
   "require": {
     "vlucas/phpdotenv": "^5.4",
     "ext-pdo": "*",
-    "vlucas/valitron": "^1.4"
+    "vlucas/valitron": "^1.4",
+    "firebase/php-jwt": "^6.2"
   }
 }

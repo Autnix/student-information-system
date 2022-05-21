@@ -7,6 +7,13 @@ use SIS\App\Response;
 class Control
 {
 
+    public function check($body, $params)
+    {
+        return Response::next([
+            'username' => "autnix"
+        ]);
+    }
+
     public function login($body, $params): Response
     {
 
