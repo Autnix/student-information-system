@@ -5,7 +5,11 @@ namespace SIS\App;
 class Controller
 {
 
-    protected function service($name): Service
+    /**
+     * @param string $name
+     * @return Service
+     */
+    protected function service(string $name): Service
     {
         $name = "\\SIS\\App\\Service\\" . $name;
         return new $name();

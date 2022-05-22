@@ -2,6 +2,7 @@
 
 namespace SIS\App\Controller;
 
+use SIS\App\Config;
 use SIS\App\Controller;
 use SIS\App\Database;
 use SIS\App\Response;
@@ -15,22 +16,14 @@ class Home extends Controller
     public function index($body, $params): Response
     {
 
-        $LogService = $this->service('Logs');
-
-//        return Response::send(Helpers::passwordToHash(""));
-
-//        return Response::send(Helpers::generateAccessToken(['id' => 1, 'name' => 'Atakan', 'studentNumber' => 2018556069]));
-        return Response::status(301)->json($LogService->getAll());
-
+        return Response::status(200)->json([
+            'API_version' => Config::getenv('API_VERSION'),
+            'API_name' => Config::getenv('API_NAME')
+        ]);
 
     }
 
-    public function mdtest($body, $params)
-    {
-        return Response::send("Testing middlewares");
-    }
-
-    public function NotFound($body, $params)
+    public function NotFound($body, $params): Response
     {
         return Response::status(404)->json([
             "Error" => true,

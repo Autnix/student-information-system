@@ -46,23 +46,6 @@ class Authentication
             ]);
         }
     }
-//
-//    public function authenticate($body, $params)
-//    {
-//        $token = null;
-//        $headers = apache_request_headers();
-//        if (isset($headers['Authorization'])) {
-//            $matches = array();
-//            preg_match('/Token token="(.*)"/', $headers['Authorization'], $matches);
-//            if (isset($matches[1])) {
-//                $token = $matches[1];
-//            }
-//        }
-//
-//        if ($token) {
-//            Response::send($token);
-//        }
-//    }
 
     private static function getAuthorizationHeader(): string
     {
