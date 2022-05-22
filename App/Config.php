@@ -2,10 +2,13 @@
 
 namespace SIS\App;
 
+use SIS\App\Utils\Helpers;
+
 class Config
 {
-    public static function load()
+    public static function load(): void
     {
+        Helpers::cors();
         self::loadEnv();
         self::loadDb();
     }

@@ -2,52 +2,18 @@
 
 require "vendor/autoload.php";
 
-use SIS\App\{Response, Router, Config, Validator};
+use SIS\App\{Router, Config};
 
 ob_start();
+
 Config::load();
 
-Router::route("/")->get("Home@index");
-
-Router::route('/users')->get(function () {
-    return Response::status(200)->send("Users Page");
+Router::route("/")->get("Home@Index");
+Router::route("/deneme")->get(function () {
+    return \SIS\App\Response::status(200)->json(['Message' => 'Hello Vue']);
 });
 
-Router::route('/system')
-    ->middleware('Control@login')
-    ->middleware('Control@register')
-    ->middleware('Control@logout')
-    ->get('Home@mdtest');
-
-Router::route('/login')
-    ->middleware('Authentication@authenticate')
-//    ->middleware(Validator::validate('Account@Login'))
-//    ->middleware("Control@check")
-    ->post(function ($body, $params, $mdData) {
-
-        return Response::send("Username: " . $mdData[0]['user']['name']);
-    });
-
-//Router::route("/users")->get("Home@users");
-//Router::route("/users/:number/:id")->get("Home@index");
-//
-//Router::route("/")->post(function () {
-//    echo "POST ATTIN";
-//});
-//
-//Router::route("/users/:id")->post("Home@user");
-//
-Router::prefix("/admin")->group(function () {
-
-    Router::route("/")->get(function () {
-        return Response::send("Admin Index");
-    });
-    Router::route("/run/:id")->get(function () {
-        return Response::send("Admin Run");
-    });
-
-});
-
+require __DIR__ . '/App/Route/route.php';
 
 Router::dispatch();
 
