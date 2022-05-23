@@ -12,6 +12,16 @@ use SIS\App\Response;
 class Authentication
 {
 
+    public function admin($body, $params, $mdData): Response
+    {
+        if ($mdData[0]['user']['rank'] >= 1)
+            return Response::next();
+        return Response::status(401)->json([
+            'error' => true,
+            'message' => 'Unauthorized'
+        ]);
+    }
+
     public function authenticate($body, $params): Response
     {
         $token = null;

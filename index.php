@@ -8,11 +8,6 @@ ob_start();
 
 Config::load();
 
-Router::route("/")->get("Home@Index");
-Router::route("/deneme")->get(function () {
-    return \SIS\App\Response::status(200)->json(['Message' => 'Hello Vue']);
-});
-
 require __DIR__ . '/App/Route/route.php';
 
 Router::dispatch();

@@ -17,7 +17,7 @@ class Helpers
         return hash('SHA256', $password . hash('SHA1', Config::getenv('PASWORD_HASH_TOKEN')));
     }
 
-    public static function generateAccessToken(array $user): string
+    public static function generateAccessToken(array $user, int $rank): string
     {
 
         self::$payload = [
@@ -26,6 +26,7 @@ class Helpers
             'exp' => time() + self::$sessionExp,
         ];
         self::$payload['data'] = $user;
+        self::$payload['data']['rank'] = $rank;
         return JWT::encode(self::$payload, Config::getenv('ACCESS_TOKEN'), 'HS256');
     }
 

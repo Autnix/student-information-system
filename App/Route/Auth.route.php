@@ -8,10 +8,19 @@ Router::prefix("/auth")->group(function () {
         ->middleware(Validator::validate("Auth@LoginStudent"))
         ->post("Auth@LoginStudent");
 
+    Router::route("/student/change-password")
+        ->middleware("Authentication@authenticate")
+        ->middleware(Validator::validate("Auth@ChangePasswordStudents"))
+        ->post("Auth@changePasswordStudent");
+
+    Router::route("/login-lecturer")
+        ->middleware(Validator::validate("Auth@LoginLecturer"))
+        ->post("Auth@LoginLecturer");
+
     Router::route("/check")
         ->middleware("Authentication@Authenticate")
         ->post(function (array $body, array $params, array $mdData) {
 
-            return Response::json($mdData[0]['user']);
+            return Response::status(200)->json($mdData[0]['user']);
         });
 });

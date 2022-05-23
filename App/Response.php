@@ -10,6 +10,8 @@ class Response
     public static bool $next = false;
     public static array $mdData = [];
 
+    const INTERNAL_SERVER_ERROR = [500, 'Internal Server Error'];
+
     public static function json(array $res): Response
     {
         header('Content-Type: application/json');
@@ -51,16 +53,33 @@ class Response
         echo $res::$body;
     }
 
-    public static function next($data = [])
+    /**
+     * @param array $data
+     * @return Response
+     */
+    public static function next(array $data = []): Response
     {
         self::$next = true;
         self::$mdData = $data;
         return new self();
     }
 
-    public static function hasNext(Response $res)
+    /**
+     * @param Response $res
+     * @return bool
+     */
+    public static function hasNext(Response $res): bool
     {
         return $res::$next;
+    }
+
+    /**
+     * @param array $constant
+     * @return Response
+     */
+    public static function static(array $constant): Response
+    {
+        return self::status($constant[0])->json(['error' => true, 'message' => $constant[1]]);
     }
 
 }
