@@ -34,4 +34,12 @@ class Student extends Controller
         return Response::status(200)->json($student);
     }
 
+    public function GetAllByLesson($body, $params): Response
+    {
+
+        $students = $this->studentService->getAllByLesson($params[0]);
+
+        return Response::status(200)->json($students);
+    }
+
 }

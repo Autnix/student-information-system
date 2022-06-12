@@ -25,7 +25,7 @@ class Auth extends Controller
 
         $user = $mdData[0]['user'];
 
-        $student = $this->StudentService->getOneByNumberWithDetails($user['number']);
+        $student = $this->StudentService->getOneByNumberWithDetails($user['student_number']);
 
         if (!$student) {
             return Response::status(500)->json([
@@ -49,7 +49,7 @@ class Auth extends Controller
         }
 
         $pwHash = Helpers::passwordToHash($body['new_password']);
-        $newStudent = $this->StudentService->changePassword($user['number'], $pwHash);
+        $newStudent = $this->StudentService->changePassword($user['student_number'], $pwHash);
 
         if (!$newStudent) {
             return Response::status(500)->json([
@@ -73,7 +73,9 @@ class Auth extends Controller
         if (!$lec) {
             return Response::status(500)->json([
                 "error" => true,
-                "message" => "Lecturer not found!"
+                "message" => [
+                    'error' => ["Lecturer not found!"]
+                ]
             ]);
         }
 
